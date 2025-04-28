@@ -1,64 +1,60 @@
 package org.main;
 
 import org.core.APILinks;
+import org.core.models.Request;
+import org.core.models.Ticket;
 import org.helpers.HttpHelper;
+import org.helpers.RequestsHelper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String args[]) throws IOException, InterruptedException {
         APILinks apiLinks = new APILinks();
         JSONObject obj;
 
+        String internalAPIHost = args[0];
+
         obj = new JSONObject(HttpHelper.getResponseBody(apiLinks.getToken()));
-
-        //System.out.println(obj.getJSONObject("body").getString("value"));
-
         apiLinks.setToken(obj.getJSONObject("body").getString("value"));
-
+        apiLinks.setInternalAPIHost(internalAPIHost);
 
         String response = null;
 
-        obj = new JSONObject(response = HttpHelper.getResponseBody(apiLinks.getAviaSalesCheapest48Hours(
-                "rub",
-                "LED",
-                "HKT",
-                "2025-03",
-                "2025-04",
-                "false",
-                "false",
-                "ru",
-                "1000",
-                "1",
-                "price",
-                "false"
-        )));
+        JSONArray requestsJSONArray =  new JSONObject(HttpHelper.getResponseBody(apiLinks.getActiveRequests())).getJSONObject("body").getJSONArray("requests");
+        ArrayList<Request> requests = RequestsHelper.getRequestsList(requestsJSONArray);
+        ArrayList<Ticket> tickets = new ArrayList<>();
 
-        JSONArray tickets = obj.getJSONArray("data");
 
-        for (short i = 0; i < tickets.length(); i++) {
-            Object item = tickets.get(i);
-            System.out.println(item);
+        for (Request request : requests) {
+            String isDirect;
+            if (request.getChangesCount() == 0) {
+                isDirect = "true";
+            } else {
+                isDirect = "false";
+            }
+
+            response = HttpHelper.getResponseBody(apiLinks.getAviaSalesCheapest48Hours("rub",
+                    request.getDeparturePointCityName(),
+                    request.getDestinationPointCityName(),
+                    String.valueOf(request.getStartDate()),
+                    String.valueOf(request.getEndDate()),
+                    String.valueOf(request.isDirect()), isDirect,
+                    "ru", "3", "1", "price", "false"));
+
+            System.out.println(response);
+            JSONArray ticketsJsonArray = new JSONObject(response).getJSONArray("data");
+            List<Ticket> ticketsList = Ticket.fromJsonArray(ticketsJsonArray, request.getRequestId());
+            tickets.addAll(ticketsList);
         }
-        System.out.println("\n\n\n\n");
 
-        obj = new JSONObject(response = HttpHelper.getResponseBody(apiLinks.getAviaSalesMonthMatrix(
-                "rub",
-                "LED",
-                "HKT",
-                "false",
-                "2025-03-01",
-                "ru",
-                "30",
-                "false")));
-
-        tickets = obj.getJSONArray("data");
-
-        for (short i = 0; i < tickets.length(); i++) {
-            Object item = tickets.get(i);
-            System.out.println(item);
+        for(Ticket ticket : tickets) {
+            String query = apiLinks.sendTicketsToAPIServer(ticket);
+            HttpHelper.getResponseBody(query);
         }
 
     }

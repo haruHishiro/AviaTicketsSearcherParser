@@ -1,11 +1,18 @@
 package org.core;
 
+import org.core.models.Request;
+import org.core.models.Ticket;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+
 public class APILinks {
     private static String TOKEN = "";
+    private static String INTERNAL_HOST = "localhost:9090";
     private static final String AVIA_SALES_HOST = "api.travelpayouts.com/";
     private static final String AVIA_SALES_CHEAPEST_48_HOURS = "aviasales/v3/prices_for_dates";
     private static final String AVIA_SALES_MONTH_MATRIX = "v2/prices/month-matrix";
-    private static final String INTERNAL_HOST = "localhost:9090";
     private static final String INTERNAL_GET_TOKEN_METHOD = "/api/v1/parser/getToken";
 
     /*
@@ -25,9 +32,19 @@ public class APILinks {
     public void setToken(String aviaSalesToken) {
         TOKEN = aviaSalesToken;
     }
+
+    public void setInternalAPIHost(String host) {
+        INTERNAL_HOST = host;
+    }
+
     public String getToken() {
         return "http://" + INTERNAL_HOST + INTERNAL_GET_TOKEN_METHOD;
     }
+
+    public String getActiveRequests() {
+        return "http://" + INTERNAL_HOST + "/api/v1/requests/getActiveRequests";
+    }
+
     public String getAviaSalesCheapest48Hours(String currency, String origin, String destination, String departure_at,
                                               String return_at, String one_way, String direct, String market,
                                               String limit, String page, String sorting, String unique) {
@@ -47,7 +64,7 @@ public class APILinks {
                 "&token=" + TOKEN;
     }
 
-    public String getAviaSalesMonthMatrix(String currency, String origin, String destination,String show_to_affiliates, String month, String market,
+    public String getAviaSalesMonthMatrix(String currency, String origin, String destination, String show_to_affiliates, String month, String market,
                                           String limit, String one_way) {
         return "https://" + AVIA_SALES_HOST + AVIA_SALES_MONTH_MATRIX +
                 "?currency=" + currency +
@@ -61,5 +78,26 @@ public class APILinks {
                 "&token=" + TOKEN;
     }
 
+    public String sendTicketsToAPIServer(Ticket ticket) {
+        try {
+            return "http://" + INTERNAL_HOST + "/api/v1/parser/addTicket?" +
+                    "flight_number=" + URLEncoder.encode(ticket.getFlightNumber(), "UTF-8") +
+                    "&link=" + URLEncoder.encode(ticket.getLink(), "UTF-8") +
+                    "&origin_airport=" + URLEncoder.encode(ticket.getOriginAirport(), "UTF-8") +
+                    "&destination_airport=" + URLEncoder.encode(ticket.getDestinationAirport(), "UTF-8") +
+                    "&departure_at=" + URLEncoder.encode(ticket.getDepartureAt().toString(), "UTF-8") +
+                    "&airline=" + URLEncoder.encode(ticket.getAirline(), "UTF-8") +
+                    "&destination=" + URLEncoder.encode(ticket.getDestination(), "UTF-8") +
+                    "&return_at=" + URLEncoder.encode(ticket.getReturnAt().toString(), "UTF-8") +
+                    "&origin=" + URLEncoder.encode(ticket.getOrigin(), "UTF-8") +
+                    "&price=" + ticket.getPrice() +
+                    "&return_transfers=" + ticket.getReturnTransfers() +
+                    "&transfers=" + ticket.getTransfers() +
+                    "&forRequest=" + ticket.getForRequest();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

@@ -1,3 +1,7 @@
+/*
+ * Ticket model
+ * Developers: k.d.panov@gmail.com
+ */
 package org.core.models;
 
 import org.json.JSONArray;

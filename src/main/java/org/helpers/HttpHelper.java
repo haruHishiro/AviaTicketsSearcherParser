@@ -1,3 +1,7 @@
+/*
+ * Helper for processing http requests
+ * Developers: k.d.panov@gmail.com
+ */
 package org.helpers;
 
 import java.io.IOException;

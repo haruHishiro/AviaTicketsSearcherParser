@@ -1,3 +1,7 @@
+/*
+ * Request model
+ * Developers: k.d.panov@gmail.com
+ */
 package org.core.models;
 
 public class Request {

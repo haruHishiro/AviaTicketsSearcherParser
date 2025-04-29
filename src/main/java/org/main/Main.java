@@ -19,7 +19,7 @@ public class Main {
 
         String internalAPIHost = args[0];
 
-        obj = new JSONObject(HttpHelper.getResponseBody(apiLinks.getToken()));
+        obj = new JSONObject(HttpHelper.getResponseBody(apiLinks.getToken("aviasales")));
         apiLinks.setToken(obj.getJSONObject("body").getString("value"));
         apiLinks.setInternalAPIHost(internalAPIHost);
 
@@ -46,7 +46,6 @@ public class Main {
                     String.valueOf(request.isDirect()), isDirect,
                     "ru", "3", "1", "price", "false"));
 
-            System.out.println(response);
             JSONArray ticketsJsonArray = new JSONObject(response).getJSONArray("data");
             List<Ticket> ticketsList = Ticket.fromJsonArray(ticketsJsonArray, request.getRequestId());
             tickets.addAll(ticketsList);
@@ -57,6 +56,7 @@ public class Main {
             HttpHelper.getResponseBody(query);
         }
 
+        System.out.println("parsed");
     }
 
 }

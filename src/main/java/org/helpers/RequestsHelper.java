@@ -1,7 +1,10 @@
+/*
+ * Helper for processing user requests
+ * Developers: k.d.panov@gmail.com
+ */
 package org.helpers;
 
 import org.core.models.Request;
-import org.core.models.Ticket;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

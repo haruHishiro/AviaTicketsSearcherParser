@@ -1,11 +1,13 @@
+/*
+ * Class for processing api links for resources
+ * Developers: k.d.panov@gmail.com
+ */
 package org.core;
 
-import org.core.models.Request;
 import org.core.models.Ticket;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 public class APILinks {
     private static String TOKEN = "";
@@ -37,8 +39,8 @@ public class APILinks {
         INTERNAL_HOST = host;
     }
 
-    public String getToken() {
-        return "http://" + INTERNAL_HOST + INTERNAL_GET_TOKEN_METHOD;
+    public String getToken(String site) {
+        return "http://" + INTERNAL_HOST + INTERNAL_GET_TOKEN_METHOD + "?site=" + site;
     }
 
     public String getActiveRequests() {

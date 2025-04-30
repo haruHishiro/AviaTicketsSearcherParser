@@ -52,6 +52,29 @@ public class Ticket {
         this.forRequest = forRequest;
     }
 
+    public Ticket(String flightNumber, String link, String originAirport, String destinationAirport,
+                  OffsetDateTime departureAt, String airline, String destination,
+                   String origin, int price,
+                  int returnTransfers, int duration, int durationTo,
+                  int durationBack, int transfers, long forRequest) {
+        this.flightNumber = flightNumber;
+        this.link = link;
+        this.originAirport = originAirport;
+        this.destinationAirport = destinationAirport;
+        this.departureAt = departureAt;
+        this.airline = airline;
+        this.destination = destination;
+        this.returnAt = null;
+        this.origin = origin;
+        this.price = price;
+        this.returnTransfers = returnTransfers;
+        this.duration = duration;
+        this.durationTo = durationTo;
+        this.durationBack = durationBack;
+        this.transfers = transfers;
+        this.forRequest = forRequest;
+    }
+
     public long getForRequest() {
         return forRequest;
     }
@@ -187,24 +210,46 @@ public class Ticket {
 
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            Ticket ticket = new Ticket(
-                    jsonObject.getString("flight_number"),
-                    jsonObject.getString("link"),
-                    jsonObject.getString("origin_airport"),
-                    jsonObject.getString("destination_airport"),
-                    OffsetDateTime.parse(jsonObject.getString("departure_at"), formatter),
-                    jsonObject.getString("airline"),
-                    jsonObject.getString("destination"),
-                    OffsetDateTime.parse(jsonObject.getString("return_at"), formatter),
-                    jsonObject.getString("origin"),
-                    jsonObject.getInt("price"),
-                    jsonObject.getInt("return_transfers"),
-                    jsonObject.getInt("duration"),
-                    jsonObject.getInt("duration_to"),
-                    jsonObject.getInt("duration_back"),
-                    jsonObject.getInt("transfers"),
-                    forRequest
-            );
+            Ticket ticket;
+            if (jsonObject.toString().contains("return_at")) {
+                ticket = new Ticket(
+                        jsonObject.getString("flight_number"),
+                        jsonObject.getString("link"),
+                        jsonObject.getString("origin_airport"),
+                        jsonObject.getString("destination_airport"),
+                        OffsetDateTime.parse(jsonObject.getString("departure_at"), formatter),
+                        jsonObject.getString("airline"),
+                        jsonObject.getString("destination"),
+                        OffsetDateTime.parse(jsonObject.getString("return_at"), formatter),
+                        jsonObject.getString("origin"),
+                        jsonObject.getInt("price"),
+                        jsonObject.getInt("return_transfers"),
+                        jsonObject.getInt("duration"),
+                        jsonObject.getInt("duration_to"),
+                        jsonObject.getInt("duration_back"),
+                        jsonObject.getInt("transfers"),
+                        forRequest
+                );
+            } else {
+                ticket = new Ticket(
+                        jsonObject.getString("flight_number"),
+                        jsonObject.getString("link"),
+                        jsonObject.getString("origin_airport"),
+                        jsonObject.getString("destination_airport"),
+                        OffsetDateTime.parse(jsonObject.getString("departure_at"), formatter),
+                        jsonObject.getString("airline"),
+                        jsonObject.getString("destination"),
+                        jsonObject.getString("origin"),
+                        jsonObject.getInt("price"),
+                        jsonObject.getInt("return_transfers"),
+                        jsonObject.getInt("duration"),
+                        jsonObject.getInt("duration_to"),
+                        jsonObject.getInt("duration_back"),
+                        jsonObject.getInt("transfers"),
+                        forRequest
+                );
+            }
+
             tickets.add(ticket);
         }
         return tickets;
